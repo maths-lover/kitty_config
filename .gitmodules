@@ -1,0 +1,6 @@
+[submodule "themes/kitty-themes"]
+	path = themes/kitty-themes
+	url = https://github.com/dexpota/kitty-themes.git
+[submodule "themes/rose-pine"]
+	path = themes/rose-pine
+	url = https://github.com/rose-pine/kitty.git
