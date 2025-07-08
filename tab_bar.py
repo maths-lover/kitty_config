@@ -45,8 +45,8 @@ class Colors:
         self.icon_bg = self.blue
 
         # battery cell related colors
-        self.battery_bg = self.red
-        self.battery_text = self.bright_white
+        self.battery_bg = self.bright_white
+        self.battery_text = self.bright_black
         self.battery_low = self.red
         self.battery_charging = self.cyan
         self.battery_full = self.green
@@ -92,8 +92,8 @@ class Icons:
             }
         }
         self.shell_icon = "  "
-        self.date_icon = " "
-        self.time_icon = " "
+        self.date_icon = ""
+        self.time_icon = ""
         self.separator_symbol = ""
         self.soft_separator_symbol = ""
 
@@ -195,28 +195,24 @@ def get_battery_cells() -> list:
             status = f.read()
         with open("/sys/class/power_supply/BAT0/capacity", "r") as f:
             percent = int(f.read())
+
+        def pick_by_threshold(table: dict[int, int], pct: int) -> int:
+            # choose the largest key that is still ≤ pct
+            keys = sorted(table)
+            for k in reversed(keys):
+                if pct >= k:
+                    return table[k]
+            return table[keys[0]]          # pct is below the smallest threshold
+
         if status == "Discharging\n":
-            # TODO: declare the lambda once and don't repeat the code
-            icon_color = icons.battery.get("unplugged_colors")[
-                min(icons.battery.get("unplugged_colors").keys(), key=lambda x: abs(x - percent))
-            ]
-            icon = icons.battery.get("unplugged")[
-                min(icons.battery.get("unplugged").keys(), key=lambda x: abs(x - percent))
-            ]
+            icon_color = pick_by_threshold(icons.battery["unplugged_colors"], percent)
+            icon = pick_by_threshold(icons.battery["unplugged"], percent)
         elif status == "Not charging\n":
-            icon_color = icons.battery.get("unplugged_colors")[
-                min(icons.battery.get("unplugged_colors").keys(), key=lambda x: abs(x - percent))
-            ]
-            icon = icons.battery.get("plugged")[
-                min(icons.battery.get("plugged").keys(), key=lambda x: abs(x - percent))
-            ]
+            icon_color = pick_by_threshold(icons.battery["unplugged_colors"], percent)
+            icon = icons.battery["plugged"][1]
         else:
-            icon_color = icons.battery.get("plugged_colors")[
-                min(icons.battery.get("plugged_colors").keys(), key=lambda x: abs(x - percent))
-            ]
-            icon = icons.battery.get("plugged")[
-                min(icons.battery.get("plugged").keys(), key=lambda x: abs(x - percent))
-            ]
+            icon_color = pick_by_threshold(icons.battery["plugged_colors"], percent)
+            icon = icons.battery["plugged"][1]
 
         bg_color = colors.battery_bg
         icon_cell = (bg_color, icon_color, icon)
