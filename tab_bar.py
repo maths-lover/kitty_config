@@ -45,14 +45,14 @@ class Colors:
         self.icon_bg = self.blue
 
         # battery cell related colors
-        self.battery_bg = self.bright_white
+        self.battery_bg = self.yellow
         self.battery_text = self.bright_black
         self.battery_low = self.red
         self.battery_charging = self.cyan
         self.battery_full = self.green
 
         # clock and date colors
-        self.clock_bg = self.magenta
+        self.clock_bg = self.red
         self.date_bg = self.green
         self.clock_color = self.bright_white
         self.date_color = self.bright_white
